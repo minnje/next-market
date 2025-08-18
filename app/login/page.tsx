@@ -1,12 +1,13 @@
 "use client";
 
-import FormButton from "@/components/form-btn";
-import FormInput from "@/components/form-input";
 import { useFormState } from "react-dom";
-import { handleForm } from "./actions";
+import { login } from "./actions";
+import { PASSWORD_MIN_LENGTH } from "@/lib/constants";
+import Button from "@/components/button";
+import Input from "@/components/input";
 
 export default function Login() {
-     const [state, action] = useFormState(handleForm, null);
+     const [state, action] = useFormState(login, null);
      return (
           <div className="flex flex-col gap-10 py-8 px-6">
                <div className="flex flex-col gap-2 *:font-medium">
@@ -14,22 +15,23 @@ export default function Login() {
                     <h2 className="text-xl">이메일로 로그인하세요.</h2>
                </div>
                <form action={action} className="flex flex-col gap-3">
-                    <FormInput
+                    <Input
                          name="email"
                          type="email"
                          required
                          placeholder="Email"
-                         errors={[]}
+                         errors={state?.fieldErrors.email}
                     />
-                    <FormInput
+                    <Input
                          name="password"
                          type="password"
                          required
+                         minLength={PASSWORD_MIN_LENGTH}
                          placeholder="Password"
-                         errors={state?.errors ?? []}
+                         errors={state?.fieldErrors.password}
                     />
 
-                    <FormButton text="Login" />
+                    <Button text="Login" />
                </form>
           </div>
      );

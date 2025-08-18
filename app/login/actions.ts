@@ -1,11 +1,30 @@
 "use server";
 
-import { redirect } from "next/dist/server/api-utils";
+import {
+     PASSWORD_ERROR,
+     PASSWORD_MIN_LENGTH,
+     PASSWORD_REGEX,
+} from "@/lib/constants";
+import z from "zod";
 
-export const handleForm = async (prevState: any, formdata: FormData) => {
-     await new Promise((resolve) => setTimeout(resolve, 5000));
-     console.log(formdata.get("email"), formdata.get("password"));
-     return {
-          errors: ["wrong", "long"],
+const formSchema = z.object({
+     email: z.string().email().toLowerCase(),
+     password: z
+          .string({ required_error: "비밀번호를 입력하세요." })
+          .min(PASSWORD_MIN_LENGTH)
+          .regex(PASSWORD_REGEX, PASSWORD_ERROR),
+});
+
+export const login = async (prevState: any, formdata: FormData) => {
+     const data = {
+          email: formdata.get("email"),
+          password: formdata.get("password"),
      };
+
+     const result = formSchema.safeParse(data);
+     if (!result.success) {
+          return result.error.flatten();
+     } else {
+          console.log(result.data);
+     }
 };

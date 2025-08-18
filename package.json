@@ -17,14 +17,14 @@
     "@types/bcrypt": "^5.0.2",
     "bcrypt": "^5.1.1",
     "iron-session": "^8.0.1",
-    "next": "14.1.0",
+    "next": "^14.2.31",
     "react": "^18",
     "react-dom": "^18",
     "react-hook-form": "^7.51.0",
     "server-only": "^0.0.1",
     "twilio": "^4.23.0",
-    "validator": "^13.11.0",
-    "zod": "^3.22.4"
+    "validator": "^13.15.15",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@types/node": "^20",
