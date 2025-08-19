@@ -5,9 +5,34 @@ import {
      PASSWORD_MIN_LENGTH,
      PASSWORD_REGEX,
 } from "@/lib/constants";
+import db from "@/lib/db";
 import { z } from "zod";
+import bcrypt from "bcrypt";
+import { cookies } from "next/headers";
+import { getIronSession } from "iron-session";
+import { redirect } from "next/navigation";
 
-const checkUsername = (username: string) => !username.includes("potato");
+const checkUsername = async (username: string) => {
+     const user = await db.user.findUnique({
+          where: {
+               username,
+          },
+          select: {
+               id: true,
+          },
+     });
+     return !Boolean(user);
+};
+
+const checkEmail = async (email: string) => {
+     const userEmail = await db.user.findUnique({
+          where: {
+               email,
+          },
+          select: { id: true },
+     });
+     return !Boolean(userEmail);
+};
 
 const checkPassword = ({
      password,
@@ -26,8 +51,12 @@ const formSchema = z
                })
                .toLowerCase()
                .trim()
-               .refine(checkUsername, "포테이토X"),
-          email: z.string().email().toLowerCase(),
+               .refine(checkUsername, "사용 중인 username입니다."),
+          email: z
+               .string()
+               .email()
+               .toLowerCase()
+               .refine(checkEmail, "사용 중인 이메일입니다."),
           password: z
                .string()
                .min(PASSWORD_MIN_LENGTH)
@@ -47,12 +76,30 @@ export async function createAccount(prevState: any, formData: FormData) {
           confirmPassword: formData.get("confirmPassword"),
      };
 
-     const result = formSchema.safeParse(data);
+     const result = await formSchema.safeParseAsync(data);
      if (!result.success) {
           console.log(result.error);
 
           return result.error.flatten();
      } else {
-          console.log(result.data);
+          const hashedPassword = await bcrypt.hash(result.data.password, 12);
+          const user = await db.user.create({
+               data: {
+                    username: result.data.username,
+                    email: result.data.email,
+                    password: hashedPassword,
+               },
+               select: {
+                    id: true,
+               },
+          });
+          const cookie = await getIronSession(await cookies(), {
+               cookieName: "next-market",
+               password: process.env.COOKIE_PASSWORD!,
+          });
+          //@ts-ignore
+          cookie.id = user.id;
+          await cookie.save();
+          redirect("/");
      }
 }
