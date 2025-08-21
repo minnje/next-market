@@ -1,13 +1,13 @@
 "use client";
 
-import { useFormState } from "react-dom";
+import { useActionState } from "react";
 import { login } from "./actions";
 import { PASSWORD_MIN_LENGTH } from "@/lib/constants";
 import Button from "@/components/button";
 import Input from "@/components/input";
 
 export default function Login() {
-     const [state, action] = useFormState(login, null);
+     const [state, action] = useActionState(login, null);
      return (
           <div className="flex flex-col gap-10 py-8 px-6">
                <div className="flex flex-col gap-2 *:font-medium">
