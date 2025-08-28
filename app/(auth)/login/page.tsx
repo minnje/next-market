@@ -31,7 +31,7 @@ export default function Login() {
                          errors={state?.fieldErrors.password}
                     />
 
-                    <Button text="Login" />
+                    <Button text="로그인" />
                </form>
           </div>
      );
