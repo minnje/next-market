@@ -43,7 +43,9 @@ export default async function Products() {
                     href="/products/add"
                     className="bg-orange-500 flex transition-colors hover:bg-orange-400 items-center justify-center rounded-full size-16 fixed bottom-24 right-8 text-white"
                >
-                    <PlusIcon className="size-10" />
+                    <a target="_blank">
+                         <PlusIcon className="size-10" />
+                    </a>
                </Link>
           </div>
      );
