@@ -20,6 +20,8 @@ model User {
   posts Post[]
   comments Comment[]
   likes Like[]
+  chat_rooms ChatRoom[]
+  messages Message[]
 }
 
 model Product{
@@ -30,8 +32,8 @@ model Product{
   photo String
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
-  user User @relation(fields: [userid], references: [id], onDelete: Cascade)
-  userid Int
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int
 }
 
 model Post{
@@ -41,8 +43,8 @@ model Post{
   views Int @default(0)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
-  user User @relation(fields: [userid], references: [id], onDelete: Cascade)
-  userid Int
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int
   comments Comment[]
   likes Like[]
 }
@@ -53,18 +55,37 @@ model Comment{
   payload String
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
-  user User @relation(fields: [userid], references: [id], onDelete: Cascade)
-  userid Int
-  post Post @relation(fields: [postid], references: [id], onDelete: Cascade)
-  postid Int
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId Int
 }
 
 model Like{
-  @@id(name:"id", [userid,postid])
+  @@id(name:"id", [userId,postId])
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
-  user User @relation(fields: [userid], references: [id],onDelete: Cascade)
-  userid Int
-  post Post @relation(fields: [postid], references: [id],onDelete: Cascade)
-  postid Int
+  user User @relation(fields: [userId], references: [id],onDelete: Cascade)
+  userId Int
+  post Post @relation(fields: [postId], references: [id],onDelete: Cascade)
+  postId Int
+}
+
+model ChatRoom{
+  id String @id @default(cuid())
+  users User[]
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  messages Message[]
+}
+
+model Message{
+  id Int @id @default(autoincrement())
+  payload String
+  room ChatRoom @relation(fields: [chatRoomId], references: [id])
+  chatRoomId String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  user User   @relation(fields: [userId], references: [id])
+userId Int
 }
