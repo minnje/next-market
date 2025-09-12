@@ -1,20 +1,24 @@
+"use client";
 import { initialChatMessages } from "@/app/chats/[id]/page";
 import { formatToTimeAgo } from "@/lib/utils";
 import { ArrowUpCircleIcon } from "@heroicons/react/24/solid";
+import { createClient, RealtimeChannel } from "@supabase/supabase-js";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface ChatMessageListProps {
      initialMessages: initialChatMessages;
      userId: number;
+     chatRoomId: string;
 }
-
-export default async function ChatMessagesList({
+export default function ChatMessagesList({
      initialMessages,
      userId,
+     chatRoomId,
 }: ChatMessageListProps) {
      const [messages, setMessages] = useState(initialMessages);
-     const [message, setMessage] = useState();
+     const [message, setMessage] = useState("");
+     const channel = useRef<RealtimeChannel>();
      const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
           const {
                target: { value },
@@ -30,11 +34,42 @@ export default async function ChatMessagesList({
                     payload: message,
                     created_at: new Date(),
                     userId,
-                    user: { username: "string", avatar: "xxx" },
+                    user: {
+                         username: "string",
+                         avatar: "xx",
+                    },
                },
           ]);
+          channel.current?.send({
+               type: "broadcast",
+               event: "message",
+               payload: {
+                    message,
+               },
+          });
           setMessage("");
      };
+     useEffect(() => {
+          const client = createClient(
+               process.env.SUPABASE_PUBLIC_KEY!,
+               process.env.SUPABASE_URL!
+          );
+          channel.current = client.channel(`room-${chatRoomId}`);
+          channel.current
+               .on(
+                    "broadcast",
+                    {
+                         event: "message",
+                    },
+                    (payload) => {
+                         console.log(payload);
+                    }
+               )
+               .subscribe();
+          return () => {
+               channel.current.unsubscribe();
+          };
+     }, [chatRoomId]);
      return (
           <div className="p-5 flex flex-col gap-5 min-h-screen justify-end">
                {messages.map((message) => (

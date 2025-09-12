@@ -45,14 +45,6 @@ export default function TabBar() {
                     )}
                     <span>채팅</span>
                </Link>
-               <Link href="/live" className="flex flex-col items-center gap-px">
-                    {pathname === "/live" ? (
-                         <SolidVideoCameraIcon className="w-7 h-7" />
-                    ) : (
-                         <OutlineVideoCameraIcon className="w-7 h-7" />
-                    )}
-                    <span>쇼핑</span>
-               </Link>
                <Link
                     href="/profile"
                     className="flex flex-col items-center gap-px"

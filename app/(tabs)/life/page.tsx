@@ -4,7 +4,6 @@ import {
      ChatBubbleBottomCenterIcon,
      HandThumbUpIcon,
 } from "@heroicons/react/24/solid";
-import { unstable_cache } from "next/cache";
 import Link from "next/link";
 
 async function getPosts() {
