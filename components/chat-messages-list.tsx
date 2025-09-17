@@ -1,5 +1,6 @@
 "use client";
 import { initialChatMessages } from "@/app/chats/[id]/page";
+import { saveMessage } from "@/app/chats/actions";
 import { formatToTimeAgo } from "@/lib/utils";
 import { ArrowUpCircleIcon } from "@heroicons/react/24/solid";
 import { createClient, RealtimeChannel } from "@supabase/supabase-js";
@@ -10,11 +11,15 @@ interface ChatMessageListProps {
      initialMessages: initialChatMessages;
      userId: number;
      chatRoomId: string;
+     username: string;
+     avatar: string;
 }
 export default function ChatMessagesList({
      initialMessages,
      userId,
      chatRoomId,
+     username,
+     avatar,
 }: ChatMessageListProps) {
      const [messages, setMessages] = useState(initialMessages);
      const [message, setMessage] = useState("");
@@ -25,7 +30,7 @@ export default function ChatMessagesList({
           } = event;
           setMessage(value);
      };
-     const onSubmit = (event: React.FormEvent) => {
+     const onSubmit = async (event: React.FormEvent) => {
           event.preventDefault();
           setMessages((prev) => [
                ...prev,
@@ -44,9 +49,17 @@ export default function ChatMessagesList({
                type: "broadcast",
                event: "message",
                payload: {
-                    message,
+                    id: Date.now(),
+                    payload: message,
+                    created_at: new Date(),
+                    userId,
+                    user: {
+                         username,
+                         avatar,
+                    },
                },
           });
+          await saveMessage(message, chatRoomId);
           setMessage("");
      };
      useEffect(() => {
@@ -62,7 +75,7 @@ export default function ChatMessagesList({
                          event: "message",
                     },
                     (payload) => {
-                         console.log(payload);
+                         setMessages((prev) => [...prev, payload.payload]);
                     }
                )
                .subscribe();

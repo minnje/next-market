@@ -7,19 +7,19 @@ import { revalidateTag, unstable_cache as nextCache } from "next/cache";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
-async function getLikeStatus(postid: number) {
+async function getLikeStatus(postId: number) {
      const session = await getSession();
      const isLiked = await db.like.findUnique({
           where: {
                id: {
-                    postid,
-                    userid: session.id!,
+                    postId,
+                    userId: session.id!,
                },
           },
      });
      const likeCount = await db.like.count({
           where: {
-               postid,
+               postId,
           },
      });
      return {
@@ -78,16 +78,17 @@ export default async function PostDetail({
 }: {
      params: { id: string };
 }) {
-     const id = Number(params.id);
-     if (isNaN(id)) {
+     const { id } = await params;
+     const paramsId = Number(id);
+     if (isNaN(paramsId)) {
           return notFound();
      }
-     const post = await getCashedPost(id);
+     const post = await getCashedPost(paramsId);
      if (!post) {
           return notFound();
      }
 
-     const { likeCount, isLiked } = await getCashedLikeStatus(id);
+     const { likeCount, isLiked } = await getCashedLikeStatus(paramsId);
      return (
           <div className="p-5 text-white">
                <div className="flex items-center gap-2 mb-2">
@@ -119,7 +120,7 @@ export default async function PostDetail({
                     <LikeButton
                          isLiked={isLiked}
                          likeCount={likeCount}
-                         postId={id}
+                         postId={+id}
                     />
                </div>
           </div>

@@ -1,10 +1,5 @@
 "use server";
 
-import {
-     PASSWORD_ERROR,
-     PASSWORD_MIN_LENGTH,
-     PASSWORD_REGEX,
-} from "@/lib/constants";
 import db from "@/lib/db";
 import z from "zod";
 import bcrypt, { hash } from "bcrypt";

@@ -49,19 +49,40 @@ async function getMessages(chatRoomId: string) {
      return messages;
 }
 
+async function getUserProfile() {
+     const session = await getSession();
+     const user = await db.user.findUnique({
+          where: {
+               id: session.id,
+          },
+          select: {
+               username: true,
+               avatar: true,
+          },
+     });
+     return user;
+}
+
 export type initialChatMessages = Prisma.PromiseReturnType<typeof getMessages>;
 
 export default async function ChatRoom({ params }: { params: { id: string } }) {
-     const room = await getRoom(params.id);
+     const { id } = await params;
+     const room = await getRoom(id);
      if (!room) {
           return notFound();
      }
-     const initialMessages = await getMessages(params.id);
+     const initialMessages = await getMessages(id);
      const session = await getSession();
+     const user = await getUserProfile();
+     if (!user) {
+          return notFound();
+     }
      return (
           <ChatMessagesList
                userId={session.id!}
-               chatRoomId={params.id}
+               chatRoomId={id}
+               username={user.username}
+               avatar={user.avatar!}
                initialMessages={initialMessages}
           />
      );

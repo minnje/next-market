@@ -8,16 +8,14 @@ import { unstable_cache as nextCache, revalidateTag } from "next/cache";
 import { notFound, redirect } from "next/navigation";
 
 async function getIsOwner(userId: number) {
-     // const session = await getSession();
-     // if (session.id) {
-     //      return session.id === userId;
-     // }
+     const session = await getSession();
+     if (session.id) {
+          return session.id === userId;
+     }
      return false;
 }
 
 async function getProduct(id: number) {
-     console.log("product");
-
      const product = await db.product.findUnique({
           where: {
                id,
@@ -39,7 +37,6 @@ const getCachedProduct = nextCache(getProduct, ["product-detail"], {
 });
 
 async function getProductTitle(id: number) {
-     console.log("title");
      const product = await db.product.findUnique({
           where: {
                id,
@@ -56,7 +53,8 @@ const getCachedProductTitle = nextCache(getProductTitle, ["product-title"], {
 });
 
 export async function generateMetadata({ params }: { params: { id: string } }) {
-     const product = await getCachedProductTitle(Number(params.id));
+     const { id } = await params;
+     const product = await getCachedProductTitle(Number(id));
      return {
           title: `product ${product?.title}`,
      };
@@ -67,15 +65,16 @@ export default async function ProductDetail({
 }: {
      params: { id: string };
 }) {
-     const id = Number(params.id);
-     if (isNaN(id)) {
+     const { id } = await params;
+     const pid = Number(id);
+     if (isNaN(pid)) {
           return notFound();
      }
-     const product = await getCachedProduct(id);
+     const product = await getCachedProduct(pid);
      if (!product) {
           return notFound();
      }
-     const isOwner = await getIsOwner(product.userid);
+     const isOwner = await getIsOwner(product.userId);
      const revalidate = async () => {
           "use server";
           revalidateTag("product");
@@ -88,7 +87,7 @@ export default async function ProductDetail({
                     users: {
                          connect: [
                               {
-                                   id: product.userid,
+                                   id: product.userId,
                               },
                               {
                                    id: session.id,
