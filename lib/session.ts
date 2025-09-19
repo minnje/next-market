@@ -1,13 +1,15 @@
 import { getIronSession } from "iron-session";
 import { cookies } from "next/headers";
+import { sessionOptions } from "@/lib/sessionOptions";
 
-interface SessionContent {
-     id?: number;
-}
+export async function getSession() {
+     const cookieStore = cookies();
+     const cookieHeader = (await cookieStore).get("next-market")?.value || "";
 
-export default async function getSession() {
-     return getIronSession<SessionContent>(await cookies(), {
-          cookieName: "next-market",
-          password: process.env.COOKIE_PASSWORD!,
-     });
+     const req = { headers: { cookie: cookieHeader } };
+     const session = await getIronSession(req as any, sessionOptions);
+
+     if (!session) return null;
+
+     return session;
 }

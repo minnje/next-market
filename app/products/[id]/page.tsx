@@ -1,11 +1,11 @@
 import db from "@/lib/db";
-import getSession from "@/lib/session";
 import { formatToWon } from "@/lib/utils";
 import { UserIcon } from "@heroicons/react/24/solid";
 import Image from "next/image";
-import Link from "next/link";
 import { unstable_cache as nextCache, revalidateTag } from "next/cache";
 import { notFound, redirect } from "next/navigation";
+import { cookies } from "next/headers";
+import { getSession } from "@/lib/session";
 
 async function getIsOwner(userId: number) {
      const session = await getSession();
@@ -53,7 +53,7 @@ const getCachedProductTitle = nextCache(getProductTitle, ["product-title"], {
 });
 
 export async function generateMetadata({ params }: { params: { id: string } }) {
-     const { id } = await params;
+     const { id } = params;
      const product = await getCachedProductTitle(Number(id));
      return {
           title: `product ${product?.title}`,
@@ -65,7 +65,7 @@ export default async function ProductDetail({
 }: {
      params: { id: string };
 }) {
-     const { id } = await params;
+     const { id } = params;
      const pid = Number(id);
      if (isNaN(pid)) {
           return notFound();

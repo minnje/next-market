@@ -9,7 +9,7 @@ import db from "@/lib/db";
 import { z } from "zod";
 import bcrypt from "bcrypt";
 import { redirect } from "next/navigation";
-import getSession from "@/lib/session";
+import { getSession } from "@/lib/session";
 
 // const checkUsername = async (username: string) => {
 //      const user = await db.user.findUnique({
@@ -123,8 +123,9 @@ export async function createAccount(prevState: any, formData: FormData) {
                },
           });
           const session = await getSession();
+
           session.id = user.id;
-          await session.save();
+          await session?.save();
           redirect("/profile");
      }
 }

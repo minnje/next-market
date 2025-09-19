@@ -3,8 +3,8 @@
 import db from "@/lib/db";
 import z from "zod";
 import bcrypt, { hash } from "bcrypt";
-import getSession from "@/lib/session";
 import { redirect } from "next/navigation";
+import { getSession } from "@/lib/session";
 
 const checkEmailExists = (email: string) => {
      const user = db.user.findUnique({

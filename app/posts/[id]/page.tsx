@@ -1,9 +1,10 @@
 import LikeButton from "@/components/like-button";
 import db from "@/lib/db";
-import getSession from "@/lib/session";
+import { getSession } from "@/lib/session";
 import { formatToTimeAgo } from "@/lib/utils";
 import { EyeIcon, HandThumbUpIcon } from "@heroicons/react/24/solid";
 import { revalidateTag, unstable_cache as nextCache } from "next/cache";
+import { cookies } from "next/headers";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
@@ -13,7 +14,7 @@ async function getLikeStatus(postId: number) {
           where: {
                id: {
                     postId,
-                    userId: session.id!,
+                    userId: session?.id!,
                },
           },
      });
@@ -78,7 +79,7 @@ export default async function PostDetail({
 }: {
      params: { id: string };
 }) {
-     const { id } = await params;
+     const { id } = params;
      const paramsId = Number(id);
      if (isNaN(paramsId)) {
           return notFound();
