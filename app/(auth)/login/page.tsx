@@ -11,15 +11,15 @@ export default function Login() {
      return (
           <div className="flex flex-col gap-10 py-8 px-6">
                <div className="flex flex-col gap-2 *:font-medium">
-                    <h1 className="text-2xl">안녕하세요!</h1>
-                    <h2 className="text-xl">이메일로 로그인하세요.</h2>
+                    <h1 className="text-3xl">안녕하세요!</h1>
+                    <h2 className="text-xl">이메일로 로그인하세요 🙌</h2>
                </div>
                <form action={action} className="flex flex-col gap-3">
                     <Input
                          name="email"
                          type="email"
                          required
-                         placeholder="Email"
+                         placeholder="이메일"
                          errors={state?.fieldErrors.email}
                     />
                     <Input
@@ -27,7 +27,7 @@ export default function Login() {
                          type="password"
                          required
                          minLength={PASSWORD_MIN_LENGTH}
-                         placeholder="Password"
+                         placeholder="비밀번호"
                          errors={state?.fieldErrors.password}
                     />
 
