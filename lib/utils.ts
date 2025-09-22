@@ -7,7 +7,10 @@ export function formatToTimeAgo(date: string) {
      const time = new Date(date).getTime();
      const now = new Date().getTime();
      const diff = Math.round((time - now) / dayInMs);
-
      const formatter = new Intl.RelativeTimeFormat("ko");
-     return formatter.format(diff, "days");
+     const dayResult = formatter.format(diff, "days");
+     if (dayResult === "0일 전") {
+          return "오늘";
+     }
+     return dayResult;
 }

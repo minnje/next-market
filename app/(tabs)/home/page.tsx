@@ -37,7 +37,7 @@ export default async function Products() {
           <div>
                <ProductList initialProducts={initialProducts} />
                <form action={revalidate}>
-                    <button>revalidate</button>
+                    <button>새로고침</button>
                </form>
                <Link
                     href="/products/add"
